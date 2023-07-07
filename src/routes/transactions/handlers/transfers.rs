@@ -10,6 +10,7 @@ use crate::utils::errors::ApiResult;
 use crate::utils::urls::build_absolute_uri;
 
 use super::commons::get_backend_page;
+use std::vec::*;
 
 pub async fn get_incoming_transfers(
     context: &RequestContext,
@@ -36,6 +37,7 @@ pub async fn get_incoming_transfers(
         filters,
     )
     .await?;
+
     let service_txs = backend_txs_to_summary_txs(
         &mut backend_txs.results.into_iter(),
         &info_provider,
@@ -72,7 +74,8 @@ async fn backend_txs_to_summary_txs(
     safe_address: &str,
 ) -> ApiResult<Vec<TransactionListItem>> {
     let mut results = vec![];
-    for transfer in transfers {
+    let mut prev_transaction_hash = String::new();
+    for transfer in transfers {   
         let tx_summary = transfer
             .to_transaction_summary(
                 info_provider,
@@ -80,10 +83,19 @@ async fn backend_txs_to_summary_txs(
                 safe_address,
             )
             .await;
-        results.push(TransactionListItem::Transaction {
-            transaction: tx_summary,
-            conflict_type: ConflictType::None,
-        });
+        let tx_hash = match transfer {
+            Transfer::Erc721(t) => t.transaction_hash,
+            Transfer::Erc20(t) => t.transaction_hash,
+            Transfer::Ether(t) => t.transaction_hash,
+            Transfer::Unknown => panic!("Cannot map transfer"),
+        };
+        if prev_transaction_hash != tx_hash {
+            results.push(TransactionListItem::Transaction {
+                transaction: tx_summary,
+                conflict_type: ConflictType::None,
+            });
+        }
+        prev_transaction_hash = tx_hash;
     }
 
     Ok(results)

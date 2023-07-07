@@ -44,6 +44,19 @@ pub async fn get_history_transactions(
     )
     .await?;
     let mut backend_txs_iter = backend_paged_txs.results.into_iter();
+
+    // let mut prev_transaction_hash = String::new();
+
+    // let mut updated_backend_txs_iter: Vec<_> = backend_txs_iter.fold(Vec::new(), |mut acc, item| {
+    //     if item.get("transactionHash") != Some(&prev_transaction_hash) {
+    //         acc.push(item.clone());
+    //     }
+    //     prev_transaction_hash = item.get("transactionHash").unwrap_or(&String::new()).to_owned();
+    //     acc
+    // });
+
+    // backend_txs_iter = updated_backend_txs_iter;
+    
     let prev_page_timestamp = if page_metadata.offset != 0 {
         peek_timestamp_and_remove_item(
             &mut backend_txs_iter,

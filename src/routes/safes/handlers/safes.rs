@@ -77,6 +77,8 @@ async fn get_last_modified_message(
     let body = info_provider.client().get(http_request).await?.body;
     let messages_page: Page<Message> = serde_json::from_str::<Page<Message>>(&body)?;
 
+    println!("1111111111111111 {}", safe_address);
+
     return messages_page
         .results
         .get(0)
