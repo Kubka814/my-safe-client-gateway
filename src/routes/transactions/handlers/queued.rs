@@ -33,6 +33,7 @@ pub async fn get_queued_transactions(
 
     // As we require the Safe nonce later we use it here explicitely to query transaction that are in the future
     let safe_nonce = info_provider.safe_info(safe_address).await?.nonce as i64;
+
     let url = core_uri!(
         info_provider,
         "/v1/safes/{}/multisig-transactions/?{}&nonce__gte={}&ordering=nonce,submissionDate&trusted={}",

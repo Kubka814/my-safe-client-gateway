@@ -82,7 +82,7 @@ impl EthereumTransaction {
         match &self.transfers {
             Some(transfers) => {
                 let mut results = Vec::with_capacity(transfers.len());
-                let mut prev_transaction_hash = String::new();
+                //let mut prev_transaction_hash = String::new();
                 for transfer in transfers {
                     let transaction_summary = TransactionSummary {
                         id: self.generate_id(safe_address, &hex_hash(transfer)),
@@ -93,16 +93,18 @@ impl EthereumTransaction {
                         tx_info: transfer.to_transfer(info_provider, safe_address).await,
                     };
 
-                    let tx_hash = match transfer {
-                        Transfer::Erc721(t) => &t.transaction_hash,
-                        Transfer::Erc20(t) => &t.transaction_hash,
-                        Transfer::Ether(t) => &t.transaction_hash,
-                        Transfer::Unknown => panic!("Cannot map transfer"),
-                    };
-                    if prev_transaction_hash != tx_hash.to_string() {
-                        results.push(transaction_summary);
-                    }
-                    prev_transaction_hash = tx_hash.to_string();
+                    results.push(transaction_summary);
+
+                    // let tx_hash = match transfer {
+                    //     Transfer::Erc721(t) => &t.transaction_hash,
+                    //     Transfer::Erc20(t) => &t.transaction_hash,
+                    //     Transfer::Ether(t) => &t.transaction_hash,
+                    //     Transfer::Unknown => panic!("Cannot map transfer"),
+                    // };
+                    // if prev_transaction_hash != tx_hash.to_string() {
+                    //     results.push(transaction_summary);
+                    // }
+                    // prev_transaction_hash = tx_hash.to_string();
                 }
                 results
             }

@@ -74,7 +74,7 @@ async fn backend_txs_to_summary_txs(
     safe_address: &str,
 ) -> ApiResult<Vec<TransactionListItem>> {
     let mut results = vec![];
-    let mut prev_transaction_hash = String::new();
+    //let mut prev_transaction_hash = String::new();
     for transfer in transfers {   
         let tx_summary = transfer
             .to_transaction_summary(
@@ -83,19 +83,23 @@ async fn backend_txs_to_summary_txs(
                 safe_address,
             )
             .await;
-        let tx_hash = match transfer {
-            Transfer::Erc721(t) => t.transaction_hash,
-            Transfer::Erc20(t) => t.transaction_hash,
-            Transfer::Ether(t) => t.transaction_hash,
-            Transfer::Unknown => panic!("Cannot map transfer"),
-        };
-        if prev_transaction_hash != tx_hash {
             results.push(TransactionListItem::Transaction {
                 transaction: tx_summary,
                 conflict_type: ConflictType::None,
             });
-        }
-        prev_transaction_hash = tx_hash;
+        // let tx_hash = match transfer {
+        //     Transfer::Erc721(t) => t.transaction_hash,
+        //     Transfer::Erc20(t) => t.transaction_hash,
+        //     Transfer::Ether(t) => t.transaction_hash,
+        //     Transfer::Unknown => panic!("Cannot map transfer"),
+        // };
+        // if prev_transaction_hash != tx_hash {
+        //     results.push(TransactionListItem::Transaction {
+        //         transaction: tx_summary,
+        //         conflict_type: ConflictType::None,
+        //     });
+        // }
+        // prev_transaction_hash = tx_hash;
     }
 
     Ok(results)
